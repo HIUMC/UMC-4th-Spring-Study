@@ -5,10 +5,10 @@
 * 프로젝트를 하나 생성하고 IntelliJ에서 원격 저장소를 연결해줍니다
 * ```git init``` // 저장소 생성
 * ```git remote -v https://github.com/HIUMC/UMC-4th-Spring-Study.git```  //저장소 내 컴퓨터 <-> 원격 연결
-* ```git pull origin master```
+* ```git pull origin main```
 * IntelliJ의 terminal에서 자신의 branch로 checkout을 해주세요
     * ```git checkout origin [본인 github 아이디]```  //브랜치 개념 모른다면 구글링. 자신만의 공간을 만든다고 생각하시면 됩니다.
-* 작업은 해당 **본인 branch에서만** 진행해주세요 **(~~❌master branch❌~~)**
+* 작업은 해당 **본인 branch에서만** 진행해주세요 **(~~❌main branch❌~~)**
     * ```git branch``` : 현재 branch 확인
 
 위의 방식이 어렵다면 깃 Clone 하는 방법을 검색해보기
