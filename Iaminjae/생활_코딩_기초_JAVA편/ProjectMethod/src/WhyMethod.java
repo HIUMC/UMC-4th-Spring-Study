@@ -2,7 +2,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class WhyMethod {
-
+                                      //매개변수, parameter
     private static void printTwoTimes(String text, String delimiter) {
         System.out.println(delimiter);
         System.out.println(text);
@@ -27,7 +27,7 @@ public class WhyMethod {
 
     public static void main(String[] args) throws IOException {
 
-
+                        //인자, argument
         printTwoTimes("a", "-");
         //100000000
         writeFileTwoTimes("a", "*");
