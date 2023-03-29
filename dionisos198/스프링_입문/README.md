@@ -70,3 +70,21 @@ Optional에서 값을 꺼낼때 get을 사용하면 된다.
 
 MemberService 입장에서 MemberRepository를 외부에서 넣어주는 것이 Dependency Injection 의존성 주입이라고 한다.
 
+--section4
+
+스프링 빈을 등록하는 2가지 방법이 있다
+
+1)컴포넌트 스캔과 의존관계 설정
+
+2)자바코드로 직접 스프링 빈 등록
+
+MemberController 에서 MemberService 객체를 new 로 생성해서 쓸수 있으나 스프링이 관리하면 다 스프링 컨테이너로 등록하고 거기서 받아서 쓰도록 해야한다. 또한 스프링 컨테이너로 등록함으로써 얻는 이점 역시 있다.
+
+컴포넌트 스캔 방식은 스프링이 올라올때 Component 관련 애노테이션이 있다면 다 객체를 하나씩 생성해서 스프링 컨테이너에 등록한다.
+
+MemberController가 생성이 될 때 스프링 빈에 등록 되어 있는 멤버 서비스의 객체를 가져다가 넣어준다.  이걸 Dependency Injection이라고 함.
+
+main이 있는 패키지 하위에 있는 @Component만 스프링 에 등록한다.
+
+DI에 필드 주입 ,setter 주입 ,생성자 주입이 있는데 생성자 주입을 권장함.
+
