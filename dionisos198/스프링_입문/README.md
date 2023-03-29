@@ -56,3 +56,17 @@ SpringBoot 가 실행되면서(TOmcat이 웹서버 내장)
 
 API방식에서 핵심은 @ResponseBody를 확인해야 함.
 
+--section3
+
+회원 서비스 테스트는 JUNIT이라는 테스트 프레임 워크를 이용한다.
+
+refactoring 단축키는 ctrl+alt+M으로 사용 가능
+
+Optional을 사용하면 NULL을 감쌀수 있다는 장점이 있고 NULL을 감쌀 수 있다면 CLient 에 장점이 있다고 한다.
+
+Optional에서 값을 꺼낼때 get을 사용하면 된다.
+
+테스트를 먼저 만들고 구현을 나중에 한것을 TDD라고 한다.
+
+MemberService 입장에서 MemberRepository를 외부에서 넣어주는 것이 Dependency Injection 의존성 주입이라고 한다.
+
