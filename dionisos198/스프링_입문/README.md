@@ -88,3 +88,16 @@ main이 있는 패키지 하위에 있는 @Component만 스프링 에 등록한�
 
 DI에 필드 주입 ,setter 주입 ,생성자 주입이 있는데 생성자 주입을 권장함.
 
+--section5
+
+컨트롤러가 정적 파일보다 우선순위가 높다.
+
+<input type="text" id="name" name="name" placeholder="이름을 입력하세요"에서 name="name"부분을 보고 setName을 통해서 MemberForm에 넣어준다.
+Memberform 의 field가 name123이면 name="name123"이 되어야 한다.
+
+HTML로 데이터를 받아서 객체에 넘길때 @PostMapping 사용한다. 또한 매개변수가 필요하다(매개변수는 객체)
+
+PostMapping 은 보통 데이터를 폼에 넣어서 전달할때 쓰고 GetMapping 은 조회할때 쓴다.
+
+${member.id}와 ${member.name} 은 member.getId()와 member.getName()을 사용한다.
+
