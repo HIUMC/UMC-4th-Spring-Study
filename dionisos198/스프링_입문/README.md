@@ -1,3 +1,5 @@
+<h1>section1</h1>
+
 MAVEN과 GRADLE는 무엇인가?
 
 라이브러리를 가져오고 빌드하는 라이프 사이클까지 관리하는 툴
@@ -22,7 +24,7 @@ SpringBoot 가 실행되면서(TOmcat이 웹서버 내장)
 
 톰켓이 웹서버를 띄우며 스프링 부트가 자체적으로 올라온다.
 
--section2 
+-<h1>section2</h1> 
 
 스프링 부트에서 새로운 기술 찾기:
 
@@ -56,7 +58,7 @@ SpringBoot 가 실행되면서(TOmcat이 웹서버 내장)
 
 API방식에서 핵심은 @ResponseBody를 확인해야 함.
 
---section3
+--<h1>section3</h1>
 
 회원 서비스 테스트는 JUNIT이라는 테스트 프레임 워크를 이용한다.
 
@@ -70,7 +72,7 @@ Optional에서 값을 꺼낼때 get을 사용하면 된다.
 
 MemberService 입장에서 MemberRepository를 외부에서 넣어주는 것이 Dependency Injection 의존성 주입이라고 한다.
 
---section4
+--<h1>section4</h1>
 
 스프링 빈을 등록하는 2가지 방법이 있다
 
@@ -88,7 +90,7 @@ main이 있는 패키지 하위에 있는 @Component만 스프링 에 등록한�
 
 DI에 필드 주입 ,setter 주입 ,생성자 주입이 있는데 생성자 주입을 권장함.
 
---section5
+--<h1>section5</h1>
 
 컨트롤러가 정적 파일보다 우선순위가 높다.
 
@@ -100,4 +102,26 @@ HTML로 데이터를 받아서 객체에 넘길때 @PostMapping 사용한다. �
 PostMapping 은 보통 데이터를 폼에 넣어서 전달할때 쓰고 GetMapping 은 조회할때 쓴다.
 
 ${member.id}와 ${member.name} 은 member.getId()와 member.getName()을 사용한다.
+
+--<h1>section6</h1>
+
+h2database 에서 jdbc:h2:~/test로 최초한번만 실행하고 이후부터는 jdbc:h2:tcp://localhost/~/test으로 소켓을 통해 접근을 통해  충돌가능성을 낮춘다.
+
+파일 ddl.sql에서 sql 적어두면 git에서 파악하기 편리하기 때문에 적어준다.
+
+Test코드에 @SpringBootTest와 @Tranactional을 붙이고 @Transactional 을 붙인다면 롤백을 시킬 수 있다는 장점이 있다.
+
+JPA를 통해서 SQL과 데이터 중심의 데이터 설계에서 객체 중심의 설계로 전환 가능
+
+implementation 'org.springframework.boot:spring-boot-starter-data-jpa'붙여야한다.
+
+JPA 는 인터페이스 ,하이버네이트는 구현체라고 이해하자.
+
+spring.jpa.show-sqp=true//JPA가 날리는 SQL보기 가능
+spring.jpa.hibernate.ddl-auto=none//테이블 자동 생성 기능 끄기
+
+JPA를 쓰려면 항상 transactional이 필요하다.
+
+스프링 데이터 JPA를 활용하면 인터페이스 만으로 편리하게 DB에 왔다갔다 가능하다.
+
 
