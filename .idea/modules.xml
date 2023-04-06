@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Inheritance.iml" filepath="$PROJECT_DIR$/Inheritance.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Dori.iml" filepath="$PROJECT_DIR$/Dori.iml" />
     </modules>
   </component>
 </project>
