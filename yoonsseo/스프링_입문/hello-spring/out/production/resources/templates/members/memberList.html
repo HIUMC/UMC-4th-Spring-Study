@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="container">
+  <div>
+    <table>
+      <thead>
+      <tr>
+        <th>#</th>
+        <th>이름</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="member : ${members}">
+        <!--
+        ${members}로 모델 안에 있는 값 꺼내기
+        each로 루프를 돌게 됨
+        첫 번째 객체의 id와 name 출력
+        두 번째 객체의 id와 name 출력
+        반복
+        출력은 getName, getId로 접근
+        -->
+        <td th:text="${member.id}"></td>
+        <td th:text="${member.name}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div> <!-- /container -->
+</body>
+</html>
