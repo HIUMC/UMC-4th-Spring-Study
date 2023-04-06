@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="59286479-c8c2-47a4-a1b4-1a0a98c34bab" name="Changes" comment="" />
+    <list default="true" id="59286479-c8c2-47a4-a1b4-1a0a98c34bab" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/MemberApp.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/OrderApp.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/discount/DiscountPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/discount/FixDiscountPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/member/Grade.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/member/Member.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/member/MemberRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/member/MemberService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/member/MemberServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/member/MemoryMemberRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/order/Order.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/order/OrderService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/main/java/hello/core/order/OrderServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/test/java/hello/core/member/MemberServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/core/src/test/java/hello/core/order/OrderServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/dionisos198/스프링_핵심원리/.idea/gradle.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
