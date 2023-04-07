@@ -39,3 +39,29 @@ ex)MeberService memberService=new MemberServiceImpl();<br>
 <li>sout order하면 자동으로 toString 출력된다</li>
 <li>enumType은 ==비교가 가능하다</li>
 <li>NULL이 들어갈 수 있다면 Long으로 그게 아니면 primitive type으로 해도 상관 없다(long)</li>
+<h1>Section3</h1>
+<h3>문제점</h3>
+<li>우리가 만든 것에 새로운 정책을 추가하고 사용할 때 문제점이 발생한다<br>
+<li>OrderServiceImpl에는 DiscountPolicy인터페이스 뿐만 아니라 FixDiscountPolicy인 구체 클레스도 함께 의존하고 있기에 DIP위반이다<br>
+<li>정책을 변경하는 순간 OrderServiceImpl(클라이언트코드)도 함께 변경해야 하기 때문에 OCP위반이다</li>
+<li>뿐만 아니라 OrderServiceImpl에서 무언가 생성하는 역할을 하는 것이 탐탁지 않다 단일 책임 원칙에 살짝 안맞는다</li>
+
+-->DIP를 위반하지 않게 하려면 인터페이스에만 의존하게 해야하는데?<br>
+<h3>해결방법</h3>
+<li>누군가가 클라이언트인 OrderServiceImpl에 구현 객체를 생성하고 주입해 주어야한다.</li>
+<li>따라서 나의 애플리케이션 전체를 설정하고 구성하는 역할을 하는 AppConfig라는 것을 만들었다.</li>
+<li>AppConfig에서 객체를 생성하고 주입해주므로(이 과정을 DI라고 함) 클라이언트 코드는 DIP를 완성하였다</li>
+<li>클라이언트 코드에서 생성할 것이 없어지므로 단일책임원칙 까지 잘 지킨다</li>
+<li>또한 클라이언트 코드를 변경하지 않아도 정책을 변경할 수 있으니 OCP를 잘 지킨다</li>
+--->AppConfig 같은게 필요하다
+<h3>참고</h3>
+<li>테스트 작성할때 실패 테스트를 만들어야 한다.</li>
+<li>AppConfig같은 설정 정보를 사용할 때는 역할과 구현이 잘 보이게 Refactoring 하는 것이 좋다</li>
+<li>IoC(제어의 역전)이란 내가 무언가 호출하는 것이 아니라 framework같은 것이 내 코드를 대신 호출해 주는 것이라고 할 수 있다.</li>
+ex)Junit은 내가 짠 코드의 실행과 제어권을 가져서 Framework이다.<br>
+<li>ApplicationContext는 Spring의 모든 것을 시작하면서 스프링 컨테이너의 역할을 한다. @Bean이라는 것을 다 관리한다라고 생각할것</li>
+<h3>결국</h3>
+Spring이 DI컨테이너 역할을(DIP,단일책임원칙,OCP을 지킨다)를 하면서 추가적인 좋은 기능을 제공해주니 Spring을 쓴다.<br>
+
+
+
