@@ -91,7 +91,18 @@ static 을 사용해서 자바 코드로 순수하게 설계할 수 있지만 DI
 <li>객체 인스턴스를 생성하는데 비용이 1000이면 참조 가져오는 비용은 1정도로 엄청 작다</li>
 <li>요청할 때마다 새로 꺼내는 경우, http request life cycle 에 맞추어서 빈 라이프 사이클을 맞추거나,<br>http session과 똑같은 life cycle 맞추어서 사용,고객이 들어올때 만들고 나갈때 죽이는 경우 만들거나<br>
 할때 Singleton 안쓰는 경우가 있다.(99% singleton)</li>
-
+<h1>Section6</h1>
+<h3>요약</h3>
+<li>Autowired 는 마치 ac.getBean(MemberRepository.class)해주는 거랑 비슷하다</li>
+<li>스프링 빈의 기본 이름은 클래스 명을 사용하되 맨 앞글자만 소문자를 사용한다.</li>
+<li>기본 조회 전략: 타입이 같은 빈을 찾아서 주입</li>
+<li>@Component 스캔이 붙은 설정 정보 클래스의 패키지가 시작 위치가 된다.</li>
+<li>@SpringBootApplcation에 @ComponentScan 들어있다</li>
+<li>Controller,@Service,@Repository,@Configuration 모두 @ComponentScan있다</li>
+<li>자동 빈 등록 될때 괜히 이름 변경하지 말것</li>
+<li>수동 빈 등록과 자동 빈 등록 시 스프링 부트는 에러 메세지를 띄운다.</li>
+<h3>참고</h3>
+<li>@Configuration 이 컴포넌트 스캔의 대상이 된 이유는 @Configuration 에 @ComponentScan애노테이션이 붙어있기 때문</li>
 
 
 
