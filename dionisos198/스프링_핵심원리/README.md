@@ -220,7 +220,7 @@ request 스코프를 사용한다.</li>
 <li>HttpServletRequest 는 <br>
 1)HTTP 요청을 파라미터,헤더,쿠키,세션 등 액세스 가능<br>
 2)클라이언트의 IP주소,요청 메소드,요청 URL 등을 알 수 있다.</li>
-
+<h1>완료!</h1>
 
 
 
