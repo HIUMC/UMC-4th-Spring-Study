@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/UMC_study.iml" filepath="$PROJECT_DIR$/.idea/UMC_study.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/스프링_JPA활용_1.iml" filepath="$PROJECT_DIR$/.idea/스프링_JPA활용_1.iml" />
     </modules>
   </component>
 </project>
