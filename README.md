@@ -8,10 +8,10 @@
 * ```git pull origin main```
 * IntelliJ의 terminal에서 자신의 branch로 checkout을 해주세요
     * ```git checkout origin [본인 github 아이디]```  //브랜치 개념 모른다면 구글링. 자신만의 공간을 만든다고 생각하시면 됩니다.
-* 작업은 해당 **본인 branch에서만** 진행해주세요 **(~~❌main branch❌~~)**
+* 작업은 해당 **본인 branch에서만** 진행해주세요  **(~~❌main branch❌~~)**
     * ```git branch``` : 현재 branch 확인
 
-위의 방식이 어렵다면 깃 Clone 하는 방법을 검색해보기
+위의 방식이 어렵다면 깃 Clone 하는 방법을 검색해보기             
 
 ### 🏡 작업공간 생성
 * UMC-4th-Spring-Study (프로젝트 루트 디렉토리)
