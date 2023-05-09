@@ -30,7 +30,7 @@ public class AppConfig {
                 disountPolicy());
     }
 
-    @Bean
+    //@Bean
     public DiscountPolicy disountPolicy() {
         return new RateDiscountPolicy();
     }

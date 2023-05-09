@@ -868,3 +868,595 @@
         - 
     
     **어설프게 코드 줄이겠다고 그러지말고, 더 명확한 코드를 짜는게 좋음**
+        
+- **의존관계 자동 주입**
+    
+    **다양한 의존관계 주입방법**
+    
+    - 생성자 주입
+    - 수정자 주입(setter 주입)
+    - 필드 주입
+    - 일반 메서드 주입
+    
+    **생성자 주입**
+    
+    - 생성자를 통해 의존관계를 주입하는 방법
+    - 지금까지 우리가 진행했던 방법
+    - 특징
+        - 생성자 호출시점에 1번만 호출되는 것이 보장
+        - **불변, 필수** 의존관계에 사용 (불변이라는 특징이 개발에선 정말 중요!)
+    - 생성자가 한개만 있으면 `@Autowired` 생략 가능 (요즘엔 이렇게 많이 사용함)
+    
+    **수정자 주입**
+    
+    - set+필드명 이름으로 메서드를 만듦 + `@Autowired` 추가해줌 → 주입이 됨
+    - 스프링은 크게 2가지 라이프 사이클로 나뉨 ( 빈 생성 + 의존관계 주입)
+    - 생정자 주입은 객체를 만들 때, 어쩔 수 없이 생성자가 호출되므로 빈 생성하면서 의존관계도 자동주입 됨
+    - setter는 저 의존관계 주입 단계에서 `@Autowired` 붙어있는 것들 다 주입해줌 (순서보장 X)
+    - 이러면 생성자가 크게 필요가 없어짐
+    - 특징
+        - **선택, 변경** 가능성이 있는 의존관계에 사용
+            - 선택적으로 하려면 `@Autowired(required = false)` 이런식으로 하면 됨
+    - 자바빈 프로퍼티 규약 - 객체필드에 접근할땐 set~, get~ 메서드 갖고 접근하자!
+    
+    **필드 주입**
+    
+    - 이름 그대로 필드에 값을 그대로 넣어버림 ( 바로 주입)
+    - 특징
+        - 코드가 간결해서 많은 개발자들을 유혹하지만, 외부 변경이 불가능해 테스트하기 어려움
+            - 스프링이 없는 상태에서 순수한 자바로 테스트 불가능
+            - 데이터를 무슨 더미데이터 같은걸로 대체도 불가능
+    
+    `@Autowired private final MemberRepository memberRepository;`
+    
+    `@Autowired private final DiscountPolicy discountPolicy;`
+    
+    - 이런 방식으로 앞에 Autowired만 붙임
+    - DI 프레임워크 없인 아무것도 할 수 없음
+    - 사용 ㄴㄴ
+        - 어플리케이션의 테스트 코드, 스프링 설정 같은 곳에선 사용하기도 함
+    
+    **일반 메서드 주입**
+    
+    - 일반 메서드를 통해 주입, 아무 메서드에다가 `@Autowired` 사용
+    - 특징
+        - 한번에 여러 필드 주입 가능
+        - 일반적으로 잘 사용하지 않음
+    - 의존관계 자동 주입은 스프링 컨테이너가 관리하는 스프링 빈이어야 동작함
+    
+    **옵션 처리**
+    
+    - 주입할 스프링 빈이 없어도 동작해야 할 때가 있음
+    - `@Autowired(required = false)` 이런식으로가 아니라 True로 되어 있음 오류가 발생함
+    - 옵션으로 처리하는 방법
+        - @Autowired(required=false) : 자동 주입할 대상이 없으면 수정자 메서드 자체가 호출 안됨
+        - org.springframework.lang.@Nullable : 자동 주입할 대상이 없으면 null이 입력된다.
+        - Optional<> : 자동 주입할 대상이 없으면 Optional.empty 가 입력된다.
+    - `@Nullable`,Optinal 은 스프링 전반에 걸쳐서 지원함
+    
+    **생성자 주입을 선택해라!**
+    
+    - 과거에는 수정자, 필드 주입을 많이 사용했지만 이젠 생성자 주입 씀
+    
+     **이유**
+    
+    - **불변**
+        - 대부분의 의존관계 주입은 한번 일어나면 애플리케이션 종료시점까지 의존관계를 변경할 일이 없음
+    - **누락**
+        - 순수한 자바 코드를 단위 테스트 하는 경우에 만약 수정자 주입을 썼다면 누락이 될 수도 있음
+            
+            →의존관계가 눈에 직접 보이지 않기 때문에
+            
+        - 근데 생성자 주입을 섰다면, 컴파일 오류가 떠서 보기 쉽게 알 수 있음
+            
+            ```java
+            public class OrderServiceImplTest {
+            
+                @Test
+                void createOrder(){
+                    MemberRepository memberRepository = new MemoryMemberRepository();
+                    memberRepository.save(new Member(1L,"name", Grade.VIP));
+            
+                    OrderService orderService = new OrderServiceImpl(new MemoryMemberRepository(), new RateDiscountPolicy());
+                    Order order = orderService.createOrder(1L, "itemA", 10000);
+            
+                    Assertions.assertThat(order.getMemberId()).isEqualTo(1L);
+                }
+            }
+            ```
+            
+        - 이런식으로 가상의 구현체를 집어 넣어서 테스트 가능
+    - final 키워드를 사용 가능함 (private final 이런식으로)
+        - 그럼 어쩌다가 생성자가 누락되면 컴파일 에러가 나서 쉽게 detect 가능
+    - 프레임워크에 너무 의존하지 않을 수 있음, 굳이 필요할땐 가끔 옵션(수정자 주입) 선택하면 됨
+    
+    **컴파일 오류는 무적이다**
+    
+    **롬복(Lombok)과 최신 트렌드**
+    
+    - 실제 개발엔 보통 불변, 그래서 생성자에 final 키워드를 사용하게 됨
+    - 필드 주입처럼 편리하게 사용하는 방법?
+    - 롬복 라이브러리 이용하면 getter, setter 같은거 자동으로 만들어줌 (어노테이션으로)
+    - `@RequiredArgsConstructor` 를 쓰면 final 키워드 붙은 녀석들의 생성자를 자동으로 만들어줌
+    - 롬복이 자바의 어노테이션 프로세서라는 기능을 이용해 컴파일 시점에 생성자 코드를 생성
+    - **트렌드**
+        - 생성자를 1개 두고 `@Autowired` 생략
+        - `@RequiredArgsConstructor` 함께 사용해서 기능은 다 제공, 코드는 깔끔하게
+    
+    **조회 빈이 2개 이상 - 문제**
+    
+    - 타입으로 조회하기 때문에 선택된 빈이 2개 이상이면 문제가 생김
+    - 우리 예제에서 FixDiscountPolicy, RateDiscountPolicy 둘 다 빈으로 등록한다면?
+        - 오류가 발생 함  -  NoUniqueBeanDefinitionException
+    - 자동 관계 주입에서 문제를 해결 할 수 있는 여러 방법들이 있음
+    
+    **@Autowired 필드 명, @Qualifier, @Primary**
+    
+    - @Autowired 필드 명 매칭
+    - @Qualifier → @Qualifier 끼리 매칭 → 빈 이름 매칭
+    - @Primary 사용
+    
+    **@Autowired 필드 명 매칭**
+    
+    - `@Autowired` 는 타입 매칭 시도 → 빈 여러개면 (필드 이름), (파라미터 이름) 으로 빈을 추가 매칭함
+    - 그래서 파라미터 명 바꾸기, 필드 명 매칭으로 조회 빈 문제 타파할 수 있음
+    
+    **@Qualifier 사용**
+    
+    - 추가 구분자를 붙여주는 방법임 ( 빈 이름을 변경하는 것은 아님 )
+    - `@Qualifier("mainDiscountPolicy")` 같은 방식으로 추가 구분자를 붙여줌
+    - 나중에 사용할때 앞에 `@Qualifier("mainDiscountPolicy")` 붙여서 사용가능
+    - 만약 `@Qualifier` 로 못찾으면 그 이름의 스프링 빈을 추가로 찾음
+    - `@Qualifier` 는 `@Qualifier` 을 찾는 용도로만 사용하는 것이 좋음
+    
+    **@Primary 사용**
+    
+    - 우선순위를 정하는 방식임
+    - 주로 사용하는 쪽에 primary를 걸어주고 보조엔 다른 방식으로 명시적으로 지정해주는 느낌으로하면 깔끔하게 할 수 있음
+    - @Qualifier 보다 더 깔끔하고 간단하단 장점이 있음
+    
+    **우선순위**
+    
+    - @Qualifier가 우선순위가 더 높음 (@Primary보다)
+    - 스프링은 더 자세한 것이 보통 우선순위가 더 높음
+    
+    **애노테이션 직접 만들기**
+    
+    `@Qualifier("mainDiscountPolicy")` 엔 단점이 있음, 이렇게 적으면 컴파일시에 타입 체크가 안 됨
+    
+    → 직접 애노테이션을 만들어서 해결 가능
+    
+    ```java
+    @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Inherited
+    @Documented
+    @Qualifier("mainDiscountPolicy")
+    public @interface MainDiscountPolicy {
+    
+    }
+    ```
+    
+    - @Qualifier를 이렇게 만들면 쉽게 사용 가능
+    - 이렇게 애노테이션을 모으는건 스프링이 제공하는 기능
+    - 무분별하게하면 유지보수에 혼란을 가져올 수 있음
+    
+    **조회한 빈이 모두 필요할 때, List, Map**
+    
+    - 해당 타입의 스프링 빈이 다 필요한 경우도 있음
+    - ex) 클라이언트가 할인의 종류를 선택할 수도 있음
+        
+        ```java
+        public class AllBeanTest {
+        
+            @Test
+            void findAllBean(){
+                AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(AutoAppConfig.class, DiscountService.class);
+        
+                DiscountService discountService = ac.getBean(DiscountService.class);
+                Member member = new Member(1L,"userA", Grade.VIP);
+                int discountPrice = discountService.discount(member,10000,"fixDiscountPolicy");
+        
+                assertThat(discountService).isInstanceOf(DiscountService.class);
+                assertThat(discountPrice).isEqualTo(1000);
+        
+                int rateDiscountPrice = discountService.discount(member,20000,"rateDiscountPolicy");
+                assertThat(rateDiscountPrice).isEqualTo(2000);
+            }
+        
+            static class DiscountService{
+                private final Map<String, DiscountPolicy> policyMap;
+        
+                public DiscountService(Map<String, DiscountPolicy> policyMap, List<DiscountPolicy> policyList) {
+                    this.policyMap = policyMap;
+                    this.policyList = policyList;
+                    System.out.println("policyMap = " + policyMap);
+                    System.out.println("policyList = " + policyList);
+                }
+        
+                private final List<DiscountPolicy> policyList;
+        
+                public int discount(Member member, int price, String discountCode) {
+                    DiscountPolicy discountPolicy = policyMap.get(discountCode);
+                    return discountPolicy.discount(member, price);
+                }
+            }
+        }
+        ```
+        
+    
+    **자동, 수동의 올바른 실무 운영 기준**
+    
+    - **편리한 자동 기능**을 **기본**으로 사용
+        - 시간이 지날수록 점점 자동을 선호하는 추세임
+        - 설정정보 기반으로 구성부와 동작부를 나누는게 이상적이지만 너무 번거로운 과정이므로 자동으로 함, 그리고 자동 빈 등록을 해도 OCP, DIP 다 지킬 수 있음
+    - 수동 빈 등록을 사용할 때
+        - 개발과정은 “업무 로직”, “기술 지원 로직”으로 나눌 수 있음
+            - 업무 로직 : 비즈니스 요구사항을 개발할 때 추가되거나 변경됨
+                - 많음, 유사한 패턴 존재 → 자동 빈 등록 을 적극적으로 사용
+            - 기술 지원 : 업무로직 지원을 위한 하부기술이나 공통기술
+                - 애플리케이션에 광범위한 영향, 파악이 어려움 → 수동 빈 등록 (명확하게 밖으로 드러냄)
+        - **비즈니스 로직 중에서 다형성을 적극 활용할 때**
+            - 수동으로 설정정보를 만들어 놓으면 다른 사람이 봐도 한눈에 구분이 가능함
+            - 만약 자동으로 한다면, 특정 패키지에 모아놓는게 좋다
+    - 스프링과 스프링부트가 자동으로 등록하는 수 많은 빈들은 매뉴얼을 참고해 스프링 부트가 의도한 대로 편리하게 사용하는게 좋다
+    - 내가 직접 기술 지원 객체를 스프링 빈으로 등록한다면, 수동으로 등록해서 명확하게 드러내는게 좋다
+    
+- **빈 생명주기 콜백**
+    
+    **빈 생명주기 콜백 시작**
+    
+    - 데이터베이스 커넥션 풀(미리 앱 서버와 DB와 연결해놓음), App 시작 시점에 필요한 연결을 미리 연결 App 종료 시점에 연결을 모두 종료하는 작업을 진행 위해 객체의 초기화와 종료 작업 필요
+    - ex) 간단하게 외부 네트워크에 미리 연결하는 객체를 하나 생성한다고 가정
+        - 앱 시작 시점에 Connect(), 종료 시점에 Disconnet() 호출해 역할 함
+    - 초기화 작업은 의존관계 주입이 모두 완료되고 난 다음에 호출해야 함(객체 생성 → 의존관계주입 이어서)
+    - 초기화 시점은 스프링이 다양한 기능을 통해 종료 시점을 알려줌
+    - 스프링 빈의 라이프 사이클
+        - 스프링 컨테이너 생성 → 스프링 빈 생성 → 의존관계 주입 → 초기화 콜백 → 사용 → 소멸 전 콜백 → 스프링 종료
+        - 초기화 콜백 : 빈이 생성되고, 빈의 의존관계 주입이 완료된 후 호출
+        - 소멸전 콜백 : 빈이 소멸되기 직전에 호출
+    - 다양한 방식의 생명주기 콜백을 지원함
+    - 객체의 생성과 초기화를 분리 (단일 책임 원칙) : 최대한 생성에 집중해!
+        - 무거운 작업들은 진짜 별도의 초기화 메서드 쓰는게 훨씬 좋음
+    - 스프링은 3가지 방법으로 빈 생명주기 콜백을 지원
+        - 인터페이스
+        - 설명 정보에 지정
+        - 애노테이션 지원
+    
+    **인터페이스 InitializingBean, DisposableBean**
+    
+    ```java
+    package hello.core.ifecycle;
+    
+    import org.springframework.beans.factory.DisposableBean;
+    import org.springframework.beans.factory.InitializingBean;
+    
+    public class NetworkClient implements InitializingBean, DisposableBean {
+    
+        private String url;
+    
+        public NetworkClient(){
+            System.out.println("생성자 호출, url = " + url);
+            connect();
+            call("초기화 연결 메세지");
+    
+        }
+    
+        public void setUrl(String url) {
+            this.url = url;
+        }
+    
+        //서비스 시작시 호출
+        public void connect(){
+            System.out.println("connect: " + url);
+        }
+    
+        public void call(String message){
+            System.out.println("call: " + url + " message: " + message);
+        }
+    
+        //서비스 종료시 호출
+        public void disconnect(){
+            System.out.println("close " + url);
+        }
+    
+        @Override
+        public void afterPropertiesSet() throws Exception {
+            connect();
+            call("초기화 연결 메세지");
+        }
+    
+        @Override
+        public void destroy() throws Exception {
+            System.out.println("NetworkClient.destroy");
+            disconnect();
+        }
+    }
+    ```
+    
+    - 이런식으로 사용
+    - 스프링 전용 메서드 → 스프링 의존적임, 메서드 이름을 변경할 수 없음, 외부 library에 적용 X
+        - 지금은 거의 사용 X
+    
+    **빈 등록 초기화, 소멸 메서드**
+    
+    - 설정 정보에 @Bean(initMethod = "init", destroyMethod = "close") 처럼 초기화, 소멸 메서드를지정할 수 있음
+        
+        ```java
+        		public void init(){
+                connect();
+                call("초기화 연결 메세지");
+            }
+        
+            public void close(){
+                System.out.println("NetworkClient.destroy");
+                disconnect();
+            }
+        
+        		@Configuration
+            static class LifeCycleConfig{
+                @Bean(initMethod = "init", destroyMethod = "close")
+                public NetworkClient networkClient(){
+                    NetworkClient networkClient = new NetworkClient();
+                    networkClient.setUrl("http://hello-spring.dev");
+                    return networkClient;
+                }
+            }
+        ```
+        
+    - 이런식으로 초기화, 소멸 메서드 직접 만들고 지정 가능
+    - 장점
+        - 설정 정보를 사용해서 코드 못 고치는 외부 라이브러리에도 초기화, 종료 메서드 적용 가능
+        - @Bean으로 등록할때! destroyMethod의 디폴트 값이 (inffered) 메서드 임
+            - 외부 라이브러리의 종료 메서드는 대부분 close, shutdown
+            - (inffered)는 그 두 이름의 메서드를 자동으로 호출해줌 → 안 쓰고도 종료 동작 가능
+    
+    **애노테이션 @PostConstruct, @PreDestroy**
+    
+    - 이 방법을 쓰는게 좋음
+        
+        ```java
+        		@PostConstruct
+            public void init(){
+                connect();
+                call("초기화 연결 메세지");
+            }
+        
+            @PreDestroy
+            public void close(){
+                System.out.println("NetworkClient.destroy");
+                disconnect();
+            }
+        ```
+        
+    - 이렇게 그냥 애노테이션 달면 됨
+    - 자바의 표준이라 스프링 아니어도 사용 가능
+    - 컴포넌트 스캔과 잘 어울림 ( 빈 등록 하는 것이 아님 )
+    - 단점 : 외부 라이브러리에 지원하진 못함 ( 초기화, 소멸 메서드 직접 쓰는 방법 사용하면 됨)
+- **빈 스코프**
+    
+    **빈 스코프란?**
+    
+    - 스프링 빈이 기본적으로 싱글톤 스코프(범위)이기 때문에, 컨테이너의 시작과 함께 생성돼서 종료까지 유지됨
+    - 스코프
+        - 싱글톤 : 기본 스코프, 스프링 컨테이너 시작 → 종료 유지 (넓은 범위)
+        - 프로토타입 : 스프링 컨테이너가 빈의 생성과 의존관계 주입까지만 관여하고 더 관리 X
+            - 만들어서 던지고 끝!~
+    - 웹 관련 스코프
+        - request : 웹 요청이 들어오고 나갈때 까지 유지되는 스코프
+        - session : 웹 세션이 생성되고 종료될 때 까지 유지되는 스코프
+        - application : 웹의 서블릿 컨텍스와 같은 범위로 유지되는 스코프 (긴 범위)
+    
+    **프로토타입 스코프**
+    
+    - 싱글톤은 항상 같은 인스턴스의 스프링 빈 반환
+    - 반면, 프로토타입 스코프는 항상 새로운 인스턴스의 빈을 반환
+    - 프로토타입 빈 요청
+        - 프로토타입 스코프의 빈을 스프링 컨테이너에 요청
+        - 스프링 컨테이너는 이 시점(요청하는 시점)에 프로토타입 빈 생성, 의존관계 주입
+        - 스프링 컨테이너는 생성한 프로토타입 빈을 클라이언트에 반환
+        - 이후 같은 요청이 오면 새로 또 생성해서 반환
+        
+        → @PreDestroy 같은 종료 메서드가 호출되지 않음
+        
+        ```java
+        public class PrototypeTest {
+            @Test
+            void prototypeBeanFind() {
+                AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(PrototypeBean.class);
+                System.out.println("find prototypeBean1");
+                PrototypeBean prototypeBean1 = ac.getBean(PrototypeBean.class);
+                System.out.println("find prototypeBean2");
+                PrototypeBean prototypeBean2 = ac.getBean(PrototypeBean.class);
+                System.out.println("prototypeBean1 = " + prototypeBean1);
+                System.out.println("prototypeBean2 = " + prototypeBean2);
+        
+                assertThat(prototypeBean1).isNotSameAs(prototypeBean2);
+        
+                ac.close();
+            }
+        
+            @Scope("prototype")
+            static class PrototypeBean{
+                @PostConstruct
+                public void init(){
+                    System.out.println("PrototypeBean.init");
+                }
+        
+                @PreDestroy
+                public void destroy(){
+                    System.out.println("PrototypeBean.destroy");
+                }
+            }
+        }
+        ```
+        
+    - 위의 코드를 실행 시켜보면 새로운 인스턴스, 빈을 만든걸 알 수 있다
+    - 초기화는 시켜주지만, destroy는 실행 되지 않음
+    
+    **프로토타입 스코프 - 싱글톤 빈과 함께 사용시 문제점**
+    
+    - 스프링 컨테이너에 프로토타입 빈을 직접 요청한다면?
+        - 클라이언트A가 스프링 컨테이너에 프로토타입 빈 요청
+            - 빈이 생성되며 해당 빈의 count 필드 값이 addCount()가 호출되며 증가
+        - 클라이언트B가 스프링 컨테이너에 또 프로토타입 빈 요청
+            - 빈이 생성되며 해당 빈의 count 필드 값이 addCount()가 호출되며 증가
+        - 이게 반복되면 값이 계속 달라짐
+    
+    - 싱글톤에서 프로토타입 빈 사용
+        
+        ![Untitled](./README/Untitled%2010.png)
+        
+        - clientBean은 싱글톤, 스프링 컨테이너 생성시점에 생성 및 의존관계 주입도 발생
+        - clientBean은 의존관계 자동 주입 사용, 주입 시점에 스프링 컨테이너에 프로토타입 빈 요청
+        - 스프링 컨테이너는 프로토타입 빈을 생성해 clientBean 에 반환함 (count 필드 값은 0)
+        - 이제 clientBean은 프로토타입 빈을 내부 필드에 보관 (참조값을 보관)
+        - 클라이언트 A가 clientBean을 스프링 컨테이너에 요청해 받음, 싱글톤이라 항상 같은 clientBean이 반환
+        - 클라이언트 A는 clientBean.logic() 을 호출함
+        - clientBean은 prototypeBean의 addCount()를 호출해서 프로토타입 빈의 count가 증가, count값이 1 이 됨
+        
+         이 clientBean이 갖고 있는 빈은 **예전에 생성해서 갖고있던 프로토타입 빈**이기 때문에 이 count의 값은 **계속 유지가 됨** → 다른 클라이언트가 한번더 호출한다 했을때 필드의 값이 바뀜!
+        
+        → 프로토타입 빈을 쓰는 의도와 달라짐!(사용 할 때마다 새로 생성하지 못함)
+        
+        **싱글톤 빈과 함께 사용시 Provider로 문제해결**
+        
+        1.ApplicationContext를 호출해 항상 새로운 프로토타입 빈이 생성되게 할 수 있음
+        
+        - 이렇게 직접 의존관계 찾는 것을 의존관계 조회라고 함
+        - 이렇게 안하고도 이 의존관계 조회 할 수 있음
+    
+    - **ObjectFactory, ObjectProvider**
+        - 팩토리가 옛날거 ( getObject 기능 하나만 줌)
+        - 프로바이더가 편의기능이 더 추가돼서 제공
+        - ObjectProvider는 스프링 컨테이너를 대신 조회해주는 대리자 (DL, dependecy lookup)
+        - 특징
+            - 기능 단순, 별도의 라이브러리 필요 없음, 스프링에 의존
+    - 스프링에 의존하지 않는 DL 기능 제공하는 자바 표준 라이브러리가 생김(java.injex)
+        
+        ```java
+        @Scope("singleton")
+            static class ClientBean{//생성시점에 주입
+        
+                @Autowired
+                private Provider<PrototypeBean> prototypeBeanProvider;
+        
+                public int logic(){
+                    PrototypeBean prototypeBean = prototypeBeanProvider.get();
+                    prototypeBean.addCount();
+                    int count = prototypeBean.getCount();
+                    return count;
+                }
+            }
+        ```
+        
+        - 특징
+            - get() 하나 기능이 매우단순
+            - 별도 라이브러리 필요
+            - 스프링 아니어도 사용가능
+    - 프로토타입 사용할 때
+        - 매번 새로운 객체가 필요할 때, 실무에선 사용할 일이 굉장히 드뭄
+    - provider들은 이럴때 말고도 DL이 필요할땐 언제든 사용가능
+        - 지연해서 가져오기, 순환 참조가 일어날때 등등
+            
+            @Lookup 애노테이션 사용도 가능하지만 (이건 고려할게 너무 많음)
+            
+    - 표준 vs 스프링이면 스프링 기능 쓰는것도 좋을듯! (더 편함, 사실상 표준)
+    
+    **웹 스코프**
+    
+    - 웹 환경에서만 동작, 스프링이 종료 시점까지 관리 (종료 메서드 호출됨)
+    - 종류
+        - request : HTTP 요청 하나가 들어오고 나갈 때 까지 유지되는 스코프, HTTP 요청마다 별도의 빈 스코프가 생성되고 관리됨
+            
+            ![Untitled](./README/Untitled%2011.png)
+            
+        
+        - session : HTTP Session과 동일한 생명주기 갖는 스코프
+        - application : 서블릿 컨택스트(ServletContext)와 동일한 생명주기 갖는 스코프
+        - websocket : 웹 소켓과 동일한 생명주기 가지는 갖는 스코프
+    - 클라이언트 전용 request가 생성되고 관리
+    
+    **request 스코프 예제 만들기**
+    
+    1. 웹 환경 추가 (웹 환경에서만 동작하기 때문에)
+    2. request 스코프 예제 개발
+    - 동시에 여러 HTTP 요청이 들어오면 정확히 어떤 요청이 남긴 로근인지 구분하기 힘듦
+        
+        → request 스코프 사용
+        
+        - 기대하는 공통 포멧 : [UUID][requestURL][message]
+        - UUID를 사용해 HTTP 요청을 구분함
+        - requestURL 정보도 추가로 넣어서 어떤 URL을 요청해서 남은 로그인지 확인
+        
+        ```java
+        @Component
+        @Scope(value = "request")
+        public class MyLogger {
+            private String uuid;
+            private String requestURL;
+        
+            public void setRequestURL(String requestURL) {
+                this.requestURL = requestURL;
+            }
+        
+            public void log(String message) {
+                System.out.println("[" + uuid + "]" + "[" + requestURL + "]" + message);
+            }
+        
+            @PostConstruct
+            public void init(){
+                uuid= UUID.randomUUID().toString();
+                System.out.println("[" + uuid + "]" + "request scope bean create:" + this);
+            }
+        
+            @PreDestroy
+            public void close(){
+                System.out.println("[" + uuid + "]" + "request scope bean close:" + this);
+            }
+        }
+        ```
+        
+        - request를 위한 MyLogger 클래스
+        - 자동으로 초기화 메서드 생성해 UUID 넣어둠
+        - 빈 소멸때는 종료 메세지를 남기고
+        - 지금은 requestURL이 생성되는 시점을 알 수 없어서 외부에서 setter로 넣어줄것임
+    - 파라미터로 이 모든 서비스를 넘길 순 있지만, 웹 부분은 컨트롤러에 의존하는게 좋음
+    1. http 요청 받은 상태로 만들기 위해 provider를 써서 지연시켜줘야 함
+        - 빈 생성 요청을 지연함
+    - 같은 빈 요청이면 어디서 찾든 똑같은걸 반환 (같은 UUID) → 스프링 덕분임
+    
+    **스코프와 프록시**
+    
+    마치 Provider를 쓴 것 처럼 동작
+    
+    `@Scope(value = "request", proxyMode = ScopedProxyMode.*TARGET_CLASS*)` 
+    
+    → 이런식으로 프록시 추가
+    
+    - 그럼 가짜 프록시 클래스를 만들어서 주입해줌
+    - 또 CGLIB이라는 라이브러리에서 내 클래스를 상속받은 가짜 클래스를 등록 해놨다가, 실제 호출되는 타이밍에 진짜를 찾음
+    - 스프링 컨테이너에도 진짜 대신 가짜 프록시 객체를 등록함 (그래서 DI 도 이 가짜가 되는 것임)
+    
+    ![Untitled](./README/Untitled%2012.png)
+    
+    **가짜 프록시 객체는 요청이 오면 진짜 빈을 요청하는 로직이 있음**
+    
+    - 어차피 원본 상속받아서 사용하는 클라이언트는 잘 모름 (다형성)
+    
+    **동작 원리**
+    
+    - CGLIB라는 라이브러로리로 가짜 프록시 객체를 만들어 주입
+    - 그래서 요청이 오면 실제 빈을 요청하는 위임 로직이 들어있음
+    
+    **핵심**
+    
+    - 진짜 요청이 들어올때까지는 가짜로 버티는 것임 (provider든 프록시든)
+    - 애노테이션 설정 변경 만으로도 이런 다형성을 쓸 수 있다는 것이 중요한 점 (클라이언트 코드 안 건드림)
+    - 웹 스코프가 아니어도 프록시를 사용할 수 있음
+    
+    **주의점**
+    
+    - 싱글톤을 쓰는 것 같지만, 다르게 동작하는 것이니까 주의해야함
+    - 특별한 scope는 무분별하게 사용하지말고, 주의깊게 사용해야함
+        - 테스트하기도 까다로워짐
