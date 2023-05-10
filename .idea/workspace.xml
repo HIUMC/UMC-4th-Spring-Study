@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee20e8f1-1d2f-47f2-8899-d3a32df57898" name="Changes" comment="" />
+    <list default="true" id="ee20e8f1-1d2f-47f2-8899-d3a32df57898" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/JpashopApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/JpashopApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/domain/Delivery.java" beforeDir="false" afterPath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/domain/Delivery.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/domain/Member.java" beforeDir="false" afterPath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/domain/Member.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/domain/OrderItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/domain/OrderItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/repository/OrderRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/repository/OrderRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/service/MemberService.java" beforeDir="false" afterPath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/java/jpabook/jpashop/service/MemberService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/dionisos198/스프링_JPA활용_1/jpashop/src/main/resources/application.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,7 +35,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/dioni/OneDrive/바탕 화면/UMC_study/dionisos198/스프링_JPA활용_1"
+    "last_opened_file_path": "C:/Users/dioni/OneDrive/바탕 화면/Spring-학습/UMC_study/dionisos198/스프링_JPA활용_1/jpashop"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
