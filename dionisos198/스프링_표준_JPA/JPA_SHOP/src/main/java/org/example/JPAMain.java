@@ -1,24 +1,17 @@
-package hellojpa;
+package org.example;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-public class JpaMain {
+public class JPAMain {
     public static void main(String[] args) {
         EntityManagerFactory emf= Persistence.createEntityManagerFactory("hello");
         EntityManager em=emf.createEntityManager();
         EntityTransaction tx=em.getTransaction();
         tx.begin();
         try{
-           Member member=new Member();
-           Team team=new Team();
-           team.setName("teamA");
-           member.changeTeam(team);
-           member.setUsername("dionisos");
-           em.persist(team);
-           em.persist(member);
             tx.commit();
         }catch(Exception e){
             tx.rollback();
@@ -26,6 +19,6 @@ public class JpaMain {
             em.close();
         }
         emf.close();
-
     }
+
 }

@@ -1,14 +1,17 @@
 package hellojpa;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 public class Member {
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    private String name;
+    @ManyToOne
+    @JoinColumn(name="TEAM_ID")
+    private Team team;
+    @Column(name="USERNAME")
+    private String username;
 
     public Long getId() {
         return id;
@@ -18,11 +21,20 @@ public class Member {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Team getTeam() {
+        return team;
     }
 
-    public void setName(String name) {
-        this.name = name;
+   public void changeTeam(Team team){
+        this.team=team;
+        team.getMembers().add(this);
+   }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

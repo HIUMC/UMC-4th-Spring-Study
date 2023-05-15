@@ -77,6 +77,87 @@ em.detach()를 트랜잭션이 커밋되기 전에 수행한다면 그 전에 �
 1)em.flush()<br>2)트랜잭션 커밋<br>3)JPQL 쿼리 실행<br>
 3번은 그럴 수 밖에 없다. em.persist()를 하고 JPQL 을 실행하면 맥락상 persist 한게 들어갔다고 보는게 편리할 것 같기 때문이다
 <br>em.flush()한다고 1차 캐쉬가 지워진다는 망상은 하지 말자!
+<h2>엔티티 매핑</h2>
+<h3>Entity란?</h3>
+1)@Entity 가 붙은 클래스는 JPA가 관리, 엔티티라 한다<br>
+2)JPA를 사용해서 테이블과 매핑할 클래스는 @Entity 필수
+<h3>Entity 사용시 주의점 </h3>
+1)JPA 스펙상 기본 생성자가 필수이다. public 이든 protected 는 사용할 것<br>
+2)final 클래스,enum,interface,inner 클래스에는 사용할 수 없다.<br>
+3)저장할 필드에 final 사용을 하지 않는다.
+<h3>@Table로 테이블 명 바꾸기</h3>
+@Table(name="TTT")등으로 하면 insert into TTT 등으로 될 수 있다.
+<h3>데이터베이스 스키마 자동 생성</h3>
+<li>ddl이란?</li>
+data defination language 의 약자로 데이터베이스에서 데이터 구조를 정의하고, 조작하는데 
+사용하는 SQL의 하위언어, 예를 들면 CREATE,ALTER,DROP,TRANCATE, RENAME 등이 있다<br>
+<br>
+JPA에서는 애플리케이션 로딩 시점에 DB table 생성하는 기능을 지원 한다. 조심해야 할 것은<br>
+운영단계에서 쓰지말고 개발 단계,로컬 PC에서 개발할때 도움이 된다.
+<br>
+<br>
+<li>자동 생성의 속성 및 주의점</li>
+create-drop 은 테스트 케이스 같은 경우에 쓴다<br>
+update는 Drop table 말고 alter table 쓴다<br>
+<b>운영장비에서는 절대 create,crete-drop, update 쓰지 말자</b>
+update로 인해 alter table 나가면 DB락이 걸릴수도 있다. 그로인해 서비스 중단 가능성이 생긴다<br>
+개발 초기단계:create,update<br>
+테스트 서버:update,<b>validate(권장):엔티티와 테이블이 정상 매핑 되었는지만 확인</b><br>
+<li>DDL 생성 기능</li>
+@Column(unique=true,length=10)-->은 애플리케이션에 영향을 주는 것이 아니라 DB에 영향을 주는 것이다.
+<h3>필드와 컬럼 매핑</h3>
+<li>Column</li>
+nullable: DDL 생성 시 not null 제약 조건이 붙는다.<br>
+unique: @Table의 uniqueConstraints와 같다. @Table의 uniqueConstraints가 더 선호도가 높다.column의 unique는 이름이 표기가 안되기 때문<br>
+length:문자 길이 제약 조건,String 타입에만 사용한다<br>
+<li>Enumerated</li>
+DB에는 ENUMTYPE이 없다. VARCHAR와 매핑된다<br>
+순서의 문제때문에 default 값 ordinal 대신 EnumType.STRING 으로 한다(ordinal 시에 맨 앞에 하나 추가되는 경우 순서가 꼬일 우려가 생긴다)
+<li>Lob</li>
+CLOB:매핑하는 필드 타입이 문자일 경우<br>
+BLOB:나머지는 BLOB<br>
+VARCHAR를 넘어서는 큰 컨텐츠를 사용할 때 쓴다.
+<li>Transient</li>
+필드 와 db를 매핑을 안하게 해주는 Colum 조건이다.
+<h2>기본 키 매핑</h2>
+<li>직접할당</li>
+@Id 만 사용:직접 ID를 만들어 할당 할 때 사용.
+<li>자동 할당 </li>
+@GeneratedValue를 사용한다.<br>
+default값은 AUTO로 방언에 따라 자동으로 지정된다.<br>
+IDENTITY 는 em.persist()한 순간에 INSERT 쿼리가 날라가기에 성능상의 단점 존재<br>
+SEQUENCE 전략에서는 allocationSize로 성능을 더 좋게 할 수 있다.<br>
+ID 가 숫자 타입일 때는 왠만하면 LONG 으로 잡자<br>
+<b>기본 키 제약 조건은 NULL이 아니여야 하고, 유일 해야 하며, 변하지 않아야 한다</b>
+<li>자연키란?</li>
+비즈니스 적으로 의미있는 번호인데 . 이 값을 ID 값으로 사용하면 안된다<br>
+<li>권장하는 방법은?</li>
+LONG형+대체키+키 생성 전략 사용.
+<h3>객체와 테이블 매핑 문제점</h3>
+테이블은 외래 키로 조인을 사용해서 연관된 테이블을 찾고, 객체는 참조를 사용해서 연관된 객체를 찾음<br>
+<h2>단방향 연관관계</h2>
+@ManyToOne과 @JoinColumn 을 사용해서 객체를 테이블로 매핑 할 수 있다.<br>
+<h2>양방향 연관관계</h2>
+객체는 양방향 관계는 사실 서로 다른 단방향 2개이고 테이블에서는 외래키 하나로 두 테이블의 연관관계를 관리한다<br>
+그렇다면 객체의 어느 것이 외래 키를 관리해야 하느냐?<br>
+member 의 team 값을 바꿀 떄 외래 키값이 업데이트 되느냐? 아니면 Team 에 있는 mebers 를 업데이트 시 외래키 값이 업데이트 되느냐?<br>
+연관관계의 주인을 정해서 외래키를 등록, 수정할 수 있게 하자 나머지는 조회만 가능하게 하고<br>
+누구를 주인으로 하냐면 외래키가 있는 곳을 주인으로 정한다<br>
+관계형 DB에서 외래키가 있는 곳이 다 쪽이고 외래키가 없는 곳이 1로 설정하므로<br>
+다쪽이 항상 연관관계의 주인이라고 생각하면 된다.
+<li>참고</li>
+List<Member> members=new ArrayList<>();<br>
+처럼 필드를 선언할 때 초기화도 함께 하주는 관레가 있으며 이로 인해 null pointer 를 방지할 수 있다.<br>
+<h2>양방향 매핑 정리</h2>
+1)일단 단방향 매핑으로 설계를 끝낸다<br>
+2)JPQL에서 역방향으로 탐색할 일이 있거나 그 외에 양방향 매핑이 필요하다 싶으면 양방향 매핑을 추가한다<br>
+3)양방향 매핑시에 순수한 객체 관계를 고려하여 항상 양쪽 다 값을 입력해야 한다. 이로 인해 2가지 문제점을 해결할 수 있는데 문제점1) em.find()로 처음에 1차 캐쉬를 뒤지기 때문에 값을 넣었는데도 불구하고 값이 안나오는 경우가 생길수 있고 문제점 2) 테스트 케이스 작성 시에는 java 코드로 하기 때문이다.<br>
+4)이를 연관관계 편의 메서드라고 하는데 연관관계 편의 메서드는 1에 넣어도 되고 다에 넣어도 된다. 상황에 따라 다르다.
+
+
+
+
+
 
 
 
