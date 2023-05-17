@@ -18,7 +18,9 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems=new ArrayList<>();
 
-
+    @OneToOne
+    @JoinColumn(name = "DELIVERY_ID")
+    private Delivery delivery;
 
 
     @Column(name="ORDERDATE")
@@ -67,5 +69,13 @@ public class Order {
 
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public Delivery getDelivery() {
+        return delivery;
+    }
+
+    public void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
     }
 }

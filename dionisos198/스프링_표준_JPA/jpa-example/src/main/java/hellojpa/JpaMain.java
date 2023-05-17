@@ -13,12 +13,12 @@ public class JpaMain {
         tx.begin();
         try{
            Member member=new Member();
-           Team team=new Team();
-           team.setName("teamA");
+           member.setUsername("Llee");
+            Team team=new Team();
+            team.setName("teamA");
            member.changeTeam(team);
-           member.setUsername("dionisos");
-           em.persist(team);
            em.persist(member);
+           em.persist(team);
             tx.commit();
         }catch(Exception e){
             tx.rollback();
