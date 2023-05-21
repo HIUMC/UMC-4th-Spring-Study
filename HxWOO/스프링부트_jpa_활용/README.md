@@ -84,7 +84,7 @@ entitymanager를 통한 모든 변경은 트랜잭션 안에서 일어나야 함
 
 → jar 통해서 실행
 
-![Untitled](/README/Untitled.png)
+![Untitled](/pictures/001.png)
 
 - 이제 스프링 부트 통해 복잡한 설정이 자동화 되어서 스프링부트 매뉴얼을 참고하는게 좋음
 
@@ -122,7 +122,7 @@ entitymanager를 통한 모든 변경은 트랜잭션 안에서 일어나야 함
 - 카테고리 ↔ 상품 : N 대 M
 - 엔티티 분석
     
-    ![Untitled](/README/Untitled%201.png)
+    ![Untitled](/pictures/002.png)
     
     - 회원 : 주소(임베디드 타입), 주문 리스트를 가짐
     - 주문 : 회원, 주문상품 리스트, 배송 을 가짐
@@ -139,7 +139,7 @@ entitymanager를 통한 모든 변경은 트랜잭션 안에서 일어나야 함
     
 - 테이블 분석
     
-    ![Untitled](/README/Untitled%202.png)
+    ![Untitled](/pictures/003.png)
     
     - 아이템 : 싱글 테이블 전략을 사용함
     - 멤버 : 주소의 임베디드 타입 정보가 그대로 들어감
@@ -263,7 +263,7 @@ entitymanager를 통한 모든 변경은 트랜잭션 안에서 일어나야 함
 
 **애플리케이션 아키텍처**
 
-![Untitled](/README/Untitled%203.png)
+![Untitled](/pictures/004.png)
 
 - 계층형 구조 사용
     - controller, web : 웹 계층
@@ -623,7 +623,7 @@ public class ItemService {
     - 계층형 : include형에서 나오는 중복을 제거해줄 수 있음
 - 부트스트랩에서 뷰 리소스를 등록해서 화면 꾸밈
     
-    ![Untitled](/README/Untitled%204.png)
+    ![Untitled](/pictures/005.png)
     
     *구성된 홈 화면
     
@@ -657,7 +657,7 @@ public class ItemService {
     - 멤버엔티티가 화면과 딱 fit 하지 않음
     - validation 하기 귀찮아짐
 
-![Untitled](/README/Untitled%205.png)
+![Untitled](/pictures/006.png)
 
 **회원 목록 조회**
 
@@ -668,11 +668,11 @@ public class ItemService {
 - api를 만들땐 !절대! 엔티티를 반환하면 안됨
     - 엔티티에 로직을 추가하면 api 스펙이 변해버림
 
-![Untitled](/README/Untitled%206.png)
+![Untitled](/pictures/007.png)
 
 ***상품 등록 및 조회는 회원 때랑 같음**
 
-![Untitled](/README/Untitled%207.png)
+![Untitled](/pictures/008.png)
 
 **상품 수정**
 
@@ -689,7 +689,7 @@ public class ItemService {
 
 머지가 도대체 머지? → merge는 실무에서 안 씀
 
-![Untitled](/README/Untitled%208.png)
+![Untitled](/pictures/009.png)
 
 - 준영속 엔티티
     - 엔티티가 영속성 컨텍스트에 관리 될때 값이 바뀌면 커밋 시점에 디비에 올려줌 → 이번 실습에서도 많이 이용된 성질임 (dirty checking)
@@ -702,7 +702,7 @@ public class ItemService {
     2. 병합
         - 준영속 상태의 엔티티를 영속으로 변경해줌
     
-    ![Untitled](/README/Untitled%209.png)
+    ![Untitled](/pictures/010.png)
     
     - merge에서 병합된 엔티티는 다시 영속성으로 안 바뀜
     - 변경 감지는 원하는 속성만 변경 가능하지만, 병합은 모든 속성이 변경 됨
@@ -722,13 +722,13 @@ public class ItemService {
 - `@RequestParam` 어노테이션은 받은 request의 메세지 와 바인딩해줌
 - 바깥에서 엔티티를 찾아도 되지만 이렇게 받고 서비스 단위에서 로직이 진행되는게 훨씬 더 깔끔함 ( 영속성을 유지할 수 있음)
 
-![Untitled](/README/Untitled%2010.png)
+![Untitled](/pictures/011.png)
 
 **주문 목록 검색, 취소**
 
 - 정말 단순한 기능(조회처럼)은 service 안 거치고 repo → controller 하는거 생각해봐도 좋음
 
-![Untitled](/README/Untitled%2011.png)
+![Untitled](/pictures/012.png)
 
 
 
