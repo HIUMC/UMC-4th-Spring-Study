@@ -181,6 +181,52 @@ team.getMembers.add(member)하면 업데이트 쿼리 하나 더 증가해서<br
 <h3>실무 관점에서...</h3>
 모든 테이블에 PK를 의미 없는 값으로 해야 한다. 유연성이 필요하기 때문이다<br>
 모든 테이블에 generatedValue로 깔아라
+<h2>상속관계</h2>
+객체의 상속과 DB의 슈퍼타입,서브타입 관계를 매핑한다<br>
+전략 1)조인전략: Insert 쿼리가 2번 나간다. PK,FK로 조인전략->이걸 정석으로 생각한다.
+전략 2)단일 테이블 전략: 성능이 좋다. 칼럼을 다 떄려박는다<br>
+전략 3) 구현 클래스마다 테이블 전략: 쓰지말자. 부모 클래스를 em.find 로 찾을떄 다 뒤지기 때문에 비효율적이다<br>
+@DiscriminatorColumn(name="DTYPE")으로 타입 구분 가능하다<br>
+<h2>@MappedSuperclass</h2>
+공통 매핑 정보가 필요할 때 사용한다<br>
+공통 속성을 적고 클래스 위에다 @MappedSuperClass 붙여준다. @Entity는 안붙여도 된다<br>
+직접 생성하지 않으므로 추상 클래스를 사용한다<br>
+<b>@Entity 클래스는 엔티티나 @MappedSuperClass로 지정한 클래스만 상속 가능</b>
+<h3>주의</h3>
+실전에서 상속관계가 더 복잡해 진다면, 억단위가 넘어가면 단순한 테이블이 좋다<br>
+<h2>프록시</h2>
+em.find는 실제 entity 객체를 가져오고 em.getReference()는 가짜 엔티티 객체를 가져온다. 호출시점에는 쿼리없으나 실제 사용시점에 쿼리를 보낸다.<br>
+프록시 객체는 원본 엔티티를 상속받기 때문에 타입 체크 시에는 instance of 를 사용한다.(주의: JPA 를 사용할때는 ==비교보다는 instance of 로 타입 체크 하는 것이 낫다)<br>
+영속성 컨텍스트에 찾는 엔티티가 이미 있다면 em.getReference()도 실제 엔티티를 반환하며 그 반대로 em.getReference()이후에 em.find()를 하면 둘다 프록시 객체를 가져온다<br>
+그 이유는 성능 최적화와 JPA는 같은 트랜잭션 내에서는 동일성을 보장하려는 특성이 있기 때문<br>
+프록시에서는 영속성 컨텍스트를 이용해서 초기화를 하기 때문에 detach,em.close등으로 인해 준영속상태에 있을때 오류가 발생한다<br>
+<h3>참고</h3>
+<li>JPA 표준은 강제 초기화가 없기 때문에 강제호출(ex.member.getName())으로 초기화한다.</li>
+<h2>지연로딩vs즉시로딩</h2>
+이론적으로는 member와 team을 함께 사용할 때는 Eager가 좋고(join으로 팀을 가져온다) 그렇지 않은 경우 member만 따로 쓰는 경우에는 지연로딩을 설정하여 쿼리 양을 줄일수 있다(팀은 프록시 객체이다)<br>
+지연로딩시: 실제 team을 사용하는 시점에 초기화된다.<br>
+<h3>주의점</h3>
+N+1문제 발생가능:n+1문제란 JPQL에서 member를 다 가져온다 하면(em.createQueury("select m from Member m",Member.class).getResultList()) 1은 원래 쿼리를 예상했던 값(member),Team은 member를 다 가져온다음에 또 다시 쿼리를 날려서
+team을 select 한다. 따라서 쿼리가 더 나간다. 멤버가 여러명이고 팀이 같으면 팀 쿼리 하나만 나가지만 팀이 다양할 경우 팀 쿼리가 여러개 나간다. 이것을 N+1문제라 하며 fetch join으로 동적으로 별개의 쿼리 대신 한 쿼리로 동적으로 원하는 것을 가져올 수 있다(select m from Member m join fetch m.team)<br>
+끝이 One으로 끝나는 관계의 경우 기본이 즉시로딩이기 때문에 수동으로 꼭 LAZY설정 할 것!
+<h3>그래서?</h3>
+지연로딩을 기본적으로 깔되 같이 가져오고 싶은 쿼리가 있을 경우에는 fetch join 등을 활용한다.
+<h2>영속성 전이:CASCADE</h2>
+즉시로딩,지연로딩과는 관계가 없고 특정 엔티티를 영속 상태로 만들 떄 연관된 엔티티도 함께 영속상태로 만들고 싶을때 사용한다.
+1대 다 관계인 parent 와 child가 있을때 em.persist(child1),em.persist(child2),em.persist(parent)보다는 em.persist(parent)로 한번에 영속화 할 수 가 있다.
+<h3>언제 쓰는가?</h3>
+하나의 부모가 자식들을 관리할때 의미가 있다. ex)첨부 파일 경로는 한 게시물에서만 관리하기 때문에 의미 있다. 그러나 다른 엔티티에서 관리하거나 다른데랑 관련이 있다면 쓰지 않는다.<br>
+<b>소유자가 하나일때 쓰자</b>
+<h3>CASCADE 종류</h3>
+<li>ALL:라이프 사이클을 다 맞추어서 모두 적용할때 사용</li>
+<li>PERSIST:저장할때만 life cycle 맞추어서 영속할때 사용</li>
+<li>REMOVE: 삭제할떄만 life cycle 맞추어서 삭제할때 사용</li>
+등등 MERGE,REFRESH가 있다.
+<h2>고아 객체</h2>
+부모 엔티티와 연관관계가 끊어진 자식 엔티티를 자동으로 삭제하고 orphanRemoval=true로 한다면 parent.getChildren().remove(0)을하면 DELETE 쿼리가 나간다.
+이것도 역시 참조하는 곳이 하나일때, 특정 엔티티가 개인 소유할때만 사용해야 하고, OneToOne,OneToMany에서만 가능하다<br>
+CASCADETYPE.REMOVE처럼 동작 그러므로 ALL도 이것 포함
+
 
 
 
