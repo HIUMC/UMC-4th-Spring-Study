@@ -13,18 +13,12 @@ public class JpaMain {
         EntityTransaction tx=em.getTransaction();
         tx.begin();
         try{
-            Child child1=new Child();
-            child1.setName("lee");
-            Child child2=new Child();
-            child2.setName("kim");
-            Parent parent=new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
-          /*  em.persist(child1);
-            em.persist(child2);*/
-            em.persist(parent);
-            em.remove(parent);
-
+            Member member=new Member();
+            member.setUsername("lee");
+            Address address=new Address();
+            address.setCity("ghdf");
+            member.setAddress(address);
+            em.persist(member);
             tx.commit();
         }catch(Exception e){
             tx.rollback();

@@ -13,10 +13,12 @@ public class JPAMain {
         EntityTransaction tx=em.getTransaction();
         tx.begin();
         try{
-            Movie movie=new Movie();
-            movie.setActor("LeeJINU");
-            movie.setLocalDateTime(LocalDateTime.now());
-            em.persist(movie);
+            Member member=new Member();
+            member.setName("JIN");
+            Address address=new Address();
+            address.setCity("fe");
+            member.setAddress(address);
+            em.persist(member);
             tx.commit();
         }catch(Exception e){
             tx.rollback();
