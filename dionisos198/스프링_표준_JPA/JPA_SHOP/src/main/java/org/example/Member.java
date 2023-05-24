@@ -51,11 +51,4 @@ public class Member {
         this.address = address;
     }
 
-    public Period getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(Period period) {
-        this.period = period;
-    }
 }

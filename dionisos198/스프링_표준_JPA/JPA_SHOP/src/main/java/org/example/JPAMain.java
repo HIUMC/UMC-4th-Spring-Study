@@ -15,9 +15,7 @@ public class JPAMain {
         try{
             Member member=new Member();
             member.setName("JIN");
-            Address address=new Address();
-            address.setCity("fe");
-            member.setAddress(address);
+            member.setAddress(new Address("집","너무","좋아"));
             em.persist(member);
             tx.commit();
         }catch(Exception e){

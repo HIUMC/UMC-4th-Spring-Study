@@ -1,9 +1,7 @@
 package hellojpa;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Member {
@@ -31,7 +29,7 @@ public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="TEAM_ID")
     private Team team;
     @Column(name="USERNAME")
@@ -40,7 +38,7 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<MemberProduct> memberProductList=new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="LOCKER_ID")
     private Locker locker;
 
@@ -73,6 +71,14 @@ public class Member {
         this.team=team;
         team.getMembers().add(this);
    }
+   @ElementCollection
+   @CollectionTable(name="FAVORITE_FOODS",joinColumns = @JoinColumn(name="MEMBER_ID"))
+   private Set<String> favoriteFoods=new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(name="ADDRESS",joinColumns = @JoinColumn(name="MEMBER_ID"))
+    private List<Address> addressHistory=new ArrayList<>();
+
 
     public String getUsername() {
         return username;
@@ -80,5 +86,21 @@ public class Member {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Set<String> getFavoriteFoods() {
+        return favoriteFoods;
+    }
+
+    public void setFavoriteFoods(Set<String> favoriteFoods) {
+        this.favoriteFoods = favoriteFoods;
+    }
+
+    public List<Address> getAddressHistory() {
+        return addressHistory;
+    }
+
+    public void setAddressHistory(List<Address> addressHistory) {
+        this.addressHistory = addressHistory;
     }
 }

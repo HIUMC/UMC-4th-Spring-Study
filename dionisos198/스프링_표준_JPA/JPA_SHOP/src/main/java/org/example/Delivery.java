@@ -12,9 +12,9 @@ public class Delivery {
 
     private DeliveryStatus status;
 
-    private String street;
-    private String zipcode;
-    private String city;
+    @Embedded
+    private Address address;
+
 
     public Long getId() {
         return id;
@@ -32,27 +32,20 @@ public class Delivery {
         this.order = order;
     }
 
-    public String getStreet() {
-        return street;
+
+    public DeliveryStatus getStatus() {
+        return status;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
+    public void setStatus(DeliveryStatus status) {
+        this.status = status;
     }
 
-    public String getZipcode() {
-        return zipcode;
+    public Address getAddress() {
+        return address;
     }
 
-    public void setZipcode(String zipcode) {
-        this.zipcode = zipcode;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }
