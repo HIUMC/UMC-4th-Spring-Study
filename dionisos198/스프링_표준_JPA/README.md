@@ -246,7 +246,7 @@ CASCADETYPE.REMOVE처럼 동작 그러므로 ALL도 이것 포함
 컬렉션이 적용이 안되므로 1대 다로 별도의 db테이블을 따로 만들어 관리한다.  단 식별자 ID를 도입하면 값타입이 아니라 Entity가 되어버리므로 이 점을 주의한다<br>
 <h3>사용법</h3>
 ex<br>
-~~~java
+~~~
 @ElementCollection
 @CollectionTable(name="FAVORITE_FOODS",
 JoinColumns=@JoinColumn(name="MEMBER_ID"))
@@ -261,7 +261,176 @@ private Set<String> favoriteFoods=new HashSet<>;
 <b>값타입 컬렉션이 진짜 단순할 때 값 타입 컬렉션을 쓴다,값이 바뀌어도 update 칠 필요 없을때
 selection box 같은 곳에서 활용</b><br>
 식별자가 필요하고, 지속해서 값을 추적,변경해야 한다면 그것은 값타입이 아닌 엔티티이다<br>
+<h2>JPQL 개요</h2>
+<h3>JPA가 지원하는 쿼리 방법은?</h3>
+1)JPQL:표준 문법으로 거의 대부분 해결<br>
+2)JPA Criteria,QueryDSL: 자바 코드로 짜서 JPQL을 빌드 해주는 제너레이터 클래스의 모음<br>
+3)Native SQL:표준 SQL 벗어날떄 Native 쿼리 직접 날린다(Oracle의 connectBY같이)<br>
+4)JDBC API 직접 사용<br> 
+<h3>JPQL</h3>
+<h4>필요성</h4>
+테이블이 아닌 엔티티 객체를 대상으로 검색할때 유용하다<br>
+모든 DB 데이터를 객체로 변환해서 검색하는 것은 불가능하고<br>
+필요한 데이터만 DB에서 가져오려면 검색 조건이 포함된 SQL 필요
+<h4>JPQL 사용예</h4>
+```
+List<Member> result=em.createQuery("select m from Member m where m.name like '%kim%'".getResultList();
+```
+<h3>Criteria</h3>
+동적쿼리가 어려워서 자바 표준이 지원하는 문법이지만 복잡하고 실용성이 없어서 QueryDSL 사용 권장<br>
+<h3>NativeSQL</h3>
+<h4>사용예</h4>
+```
+List<Member> resultList=em.createNativeQuery("select ID,AGE FROM MEMBER WHERE NAME='kim'",Member.class).getResultList());
+```
+<h3>참고</h3>
+JPQL 날릴 떄 em.persist()한 것을 미리 저장을  해놓는다. JPA와 관련된 것은 가능이다<br>
+그러나 DB 커넥션을 획득하고 그것으로 쿼리를 날리면(JPA랑 관련 X) 미리 저장을 하지 않음
+<h2>JPQL-기본</h2>
+<h3>update문?</h3>
+JPA는 트랜잭션 내에서 값을 바꾸면 자동으로 update 쳐주지만, 한건 한건만 바꿀 수 있다.<br>
+이 경우 한방에 여러개를 update 치기 위해서(예를 들어 전사원 연봉 10프로 증가) update 문을 가진 JPQL을 사용할 수 있다.
+<h3>TypedQuery VS Query</h3>
+TypeQuery는 반환타입이 명확할때 사용, Query는 반환 타입이 명확하지 않을 때 사용<br>
+TypedQuery는 select m From member m 같은 경우<br>
+Query는 select m.username, m.age 같은 경우 <br>
+<h3>파라미터바인딩의 예</h3>
+```
+List<Member> resultList=em.createQuery("select m from Member m 
+where m.username=:username",Member.class).
+setParameter("username","leee").getResultList();
+```
+<h3>결과조회 방법</h3>
+<li>getResultList</li>
+결과가 하나 이상일 때, NullpointerException 걱정 안해도 됨
+<li>getSingleResult</li>
+결과가 정확히 하나일때만 사용,나머지 경우에 예외 터진다.
+<h3>프로젝션</h3>
+프로젝션이란 select 절에 조회할 대상을 지정하는 것을 뜻한다<br>
+<h4>연관된 엔티티를 프로젝션할때</h4>
+select m.team from Member m 보다는<br>
+select t from Member m join m.team t가 join이 잘 보이기에 좋다
+<h4>distinct 중복 제거 예제</h4>
+select distinct m.username,m.age from Member m<br>
+<h4>여러값을 조회할때</h4>
+QueryType,Object[]타입으로 조회가능하지만<br>
+DTO로 조회하는 것이 훨씬 좋다.<br>
+<h4>사용예</h4>
 
+```
+List<MemberDTO> result=em.createQuery("select 
+new JPQL.MemberDTO(m.USERNAME,m.age) from Member m,MemberDTO.class)
+.getResultList();
+```
+<h4>주의점</h4>
+꼭 Dto 클래스에 생성자 쓰기!
+<h2>페이징 사용법</h2>
+사용예<br>
+
+```
+List<Member> result=em.createQuery("select m from Member m
+ order by m.age desc",Member.class)
+.setParameter(1)//0부터 시작하는 startPosition
+.setMaxResults(20)//조회할 데이터 수
+.getresultList();
+```
+<h2>조인</h2>
+<h3>종류</h3>
+<li>내부조인: 조인조건을 만족하는 두 테이블의 공통된 값을 기반으로 join을 수행하는 것을
+내부 join이라고 하며 멤버는 있고 팀이 없다면 출력하지 않는다</li>
+<li>외부 조인: 조인 조건을 만족하지 않는 레코드도 결과에 포함한다. 외부 join은 팀이 없어도 멤버는 조인이 가능하다</li>
+<li>세타조인: 연관관계 전혀 없는지 비교할때 사용한다</li>
+<h3>ON절 활용하여</h3>
+1)조인대상 필터링<br>
+2)연관관계 없는 엔티티를 외부조인이 가능하다<br>
+<h2>서브쿼리</h2>
+<h3>예</h3>
+
+```roomsql
+select m from Member m whrer m.age>(select avg(m2.age) from Member m2)
+```
+이 경우 m2 를 새로 정의 해서 성능이 잘 나온다. 하지만<br>
+```roomsql
+select m from Member m where (
+select count(o) from Order o where m=o.member)>0
+```
+이 경우 m을 긁어오기에 성능 안나올수 있다.
+<h3>서브쿼리 지원함수</h3>
+<li>EXISTS</li>
+서브쿼리에 결과가 존재하면 참.<br>
+All: 모두 만족시 참<br>
+ANY,SOME:같은 의미
+<li>IN</li>
+서브 쿼리의 결과 중 하나라도 같은 것이 있으면 참<br>
+<h4>사용예</h4>
+
+```roomsql
+select m from Member m where 
+exists (select t from m.team t where t.name='팀A')
+
+select o from Order o
+where o.orderAmount>ALL(select p.stockAmount from Product p)
+
+select m from Member m
+where m.team=ANY(select t from Team t)
+```
+
+<h3>JPQL타입을 표현할때는</h3>
+문자는 ''사이에
+숫자는 10L,10D,10F
+Boolean:TRUE,FALSE로 <br>
+<h4>사용예</h4>
+```java
+String query="select m.username,'hello', true FROM Member m";
+List<Object[]> result=...
+Object[0]:유저이름,Object[1]:Hello,Object[2]:true 들어간다
+```
+<h4>ENUMTYPE사용예</h4>
+```roomsql
+where m.type=jpql(클래스).MemberType(클래스명).Admin;
+```
+<h4>상속관계에서 엔티티 타입 구분 시 예제</h4>
+```roomsql
+"select i from Item i where type(i)=Book",Item.class)
+```
+type이 book인 것만 추출한다
+<h2>조건식-CASE식</h2>
+<h4>예제</h4>
+```roomsql
+select 
+    case when m.age <= 10 them '학생요금'
+         when m.age >= 60 then '경로요금'
+         else '일반요금'
+    end
+from Member m
+```
+<li>COALESE:하나씩 조회해서 NULL이 아니면 반환</li>
+<h4>예제</h4>
+
+```roomsql
+select coalesce(m.username,'이름 없는 회원') from Member m
+```
+username 없으면 이름 없는 회원으로 나온다.
+<li>NULLIF:두 값이 같으면 NULL반환, 다르면 첫번째 값</li>
+<h4>예제</h4>
+
+```roomsql
+select NULLIF(m.username,'관리자') from Member m
+```
+
+<h2>JPQL함수</h2>
+기본함수와 사용자정의함수로 나누어져 있으며<br>
+기본함수에는<br>
+문자 두개 더하는 concat<br>
+문자 자르는 SUBSTRING<br>
+공백 제거하는 TRIM<br>
+대소문자로 전환하는 LOWER,UPPER<br> 
+문자길이 찾는 LENGTH<br>
+문자열에서 문자열 위치 찾는 LOCATE<br>
+ABS,SQRT,MOD 같은 수학함수<br>
+콜렉션에서 사이즈 계산할 수 있는 size함수 <br>등이 있다.
+<br>
+사용자 정의함수는 교재 참고
 
 
 

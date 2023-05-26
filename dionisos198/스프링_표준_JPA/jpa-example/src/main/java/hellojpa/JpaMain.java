@@ -5,6 +5,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -15,12 +16,17 @@ public class JpaMain {
         try{
             Member member=new Member();
             member.setUsername("lee");
-            member.getFavoriteFoods().add("치킨");
-            member.getFavoriteFoods().add("족발");
-            member.getFavoriteFoods().add("마늘");
-            member.getAddressHistory().add(new Address("지금","우리","만나"));
-            member.getAddressHistory().add(new Address("아","당장","만나"));
+            Member member2=new Member();
+            member2.setUsername("kim");
+            Member member3=new Member();
+            member3.setUsername("leeeee");
             em.persist(member);
+            em.persist(member2);
+            em.persist(member3);
+           List<Member> members=em.createNativeQuery("select ID from Member",Member.class).getResultList();
+            for (Member member1 : members) {
+                System.out.println(member1.getUsername());
+            }
             tx.commit();
         }catch(Exception e){
             tx.rollback();
