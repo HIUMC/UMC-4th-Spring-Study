@@ -432,6 +432,80 @@ ABS,SQRT,MOD 같은 수학함수<br>
 <br>
 사용자 정의함수는 교재 참고
 
+<h3>JPQL-경로표현식</h3>
+상태필드: 단순히 값 저장 위한 필드(ex.m.username)<br>
+연관필드:1)단일값 연관 필드 2)컬렉션 값 연관 필드<br>
+연관필드들은 묵시적 내부 조인이 발생할 수 있다.<br>
+단일값 연관 경로는 select m.teamname 처럼 탐색이 가능하지만<br>
+컬렉션 값 연관 경로는 묵시적 join으로는 탐색이 불가능 하니(t.members.size가 최선) 명시적 join 으로 해결가능<br>
+<h4>참고</h4>
+컬렉션 값 연관 경로 가져올떄 List<Collection> result로 받는다<br>
+<h3>결론</h3>
+명시적 join쓰자
+
+<h2>페치조인</h2>
+<h3>페치조인의 필요성</h3>
+일단 기본적으로 type을 LAZY 로 하는 이유는 조회할때 한 방에 다른 엔티티까지 쿼리가 나가고 그거에 연관된 엔티티까지 쿼리가 나가면 비효율 적이다.
+
+그래서 LAZY 를 쓰는데 조회할때 다른 Entity 의 값도 가져오려면 LAZY 타입이니 쿼리가 많이 나가서 fetch JOIN 으로 한 쿼리로 연결 시킨다.
+
+그러면 EAGER 바꾸면 될 것같지만, EAGER 는 예측할 수 없는 문제도 있고, 다른곳에서 조회할때는 또 다른 엔티티의 값이 필요가 없을 수도 있기 때문에 기본은 LAZY로 해두고 다른 엔티티의 값이 필요한 특수한 경우에만 fetch JOIN 을 한다.
+<br>
+즉 객체 그래프를 동적으로 명시적으로 가지고 오고 싶을 때 fetch join 을 쓴다<br>
+N+1문제를 fetch join으로 해결가능하다<br>
+<h3>1대 다 관계에서 fetch join</h3>
+데이터가 뻥튀기 될 수 있다.<br>
+```roomsql
+select t from Team t join fetch t.members 
+```
+이러면 데이터베이스 테이블을 따라서 memberID랑 Name만 다른 것을 다른 컬럼으로 본다<br>
+<br>
+같은 식별자를 가진 Team 엔티티를 제거하려면 distinct를 써주면 된다<br>
+<h3>페치조인VS일반조인</h3>
+일반 조인은 실행 시에 연관된 엔티티를 함께 퍼올리지 않는다<br>
+<h3>페치조인 한계</h3>
+1)페치조인 대상 별칭 불가->fetch join 을 여러개 쓸때만 가능<br>
+2)둘이상의 컬렉션 페치 조인 불가->다대다 데이터 뻥튀기<br>
+3)컬렉션을 페치 조인시 페이징 API 사용 불가:DB에서 데이터를 다 끌고 와서 메모리에서 페이징 하기 때문에 장애나기 매우 좋다<br>
+사용을 원한다면?<br>
+@OneToMany위에 @Batchsize(size=100) 혹은 global setting 으로 배치 size를 이용해서 해결<br>
+<h3>페치조인보다는 일반조인</h3>
+여러 테이블 조인해서 엔티티가 가진 모양이 아닌 다른 결과를 할때 일반 조인을 사용해서 필요한 데이터만 DTO로 반환하는 것이 효과적<br>
+<h2>다형성 쿼리</h2>
+조회 대상을 특정 자식으로 한정할떄
+```roomsql
+select i from Item i where type(i) IN (BOOk,Movie)//Item 중 Book,Movie를 조회해라
+```
+상속 구조에서 부모 타입을 특정 자식 타입으로 다룰 떄<br>
+```roomsql
+select i from Item i where treat(i as Book).author='kim'
+```
+<h2>엔티티를 직접 사용</h2>
+기본키값 외래 키값 모두 JPQL에서 엔티티를 직접 사용하면 SQL에서는 해당 엔티티의 기본 <b>키</b>값을 사용
+
+<h2>Named 쿼리</h2>
+미리 정의해서 이름을 부여해두고 사용하는 JPQL인데<br>
+정적 쿼리만 가능하기 떄문에 <br>
+장점 1) 문법 오류를 잡아줌<br>
+장점 2) SQL로 파싱 후 캐시 하기 때문에 파싱 비용이 별로 없다<br>
+<h3>어떻게 사용</h3>
+1)어노테이션
+2)XML에 정의
+3)Spring data JPA 활용<br>
+
+<h2>벌크연산</h2>
+PK로 찍어서 update,delete 제외한 나머지 모든 SQL 의 UPDate 문이나 delete 문 <br>
+JPA의 한건한건의 변경감지 대신 쿼리 한번으로 update 치기 가능<br>
+<h3>예제</h3>
+```java
+int resultCount=em.createQuery("update Member m st m.age=20").executeUpdate();
+```
+<h3>주의점</h3>
+영속성 컨텍스트를 무시하고 db에 직접 쿼리 날리므로<br>
+DB에는 update 되어 6000인데 영속성 컨텍스트에는 원래 값이 들어가 있는 경우가 있을 수 있다<br>
+
+1)벌크 연산을 먼저 실행하거나<br>
+2)벌크 연산 수행 후 영속성 컨텍스트를 초기화한다<br>
 
 
 
