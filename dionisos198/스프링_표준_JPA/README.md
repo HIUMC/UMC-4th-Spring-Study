@@ -347,9 +347,10 @@ List<Member> result=em.createQuery("select m from Member m
 <h3>예</h3>
 
 ```roomsql
-select m from Member m whrer m.age>(select avg(m2.age) from Member m2)
+select m from Member m where m.age>(select avg(m2.age) from Member m2)
 ```
 이 경우 m2 를 새로 정의 해서 성능이 잘 나온다. 하지만<br>
+
 ```roomsql
 select m from Member m where (
 select count(o) from Order o where m=o.member)>0
@@ -380,16 +381,19 @@ where m.team=ANY(select t from Team t)
 숫자는 10L,10D,10F
 Boolean:TRUE,FALSE로 <br>
 <h4>사용예</h4>
-```java
+
+```
 String query="select m.username,'hello', true FROM Member m";
 List<Object[]> result=...
 Object[0]:유저이름,Object[1]:Hello,Object[2]:true 들어간다
 ```
 <h4>ENUMTYPE사용예</h4>
+
 ```roomsql
 where m.type=jpql(클래스).MemberType(클래스명).Admin;
 ```
 <h4>상속관계에서 엔티티 타입 구분 시 예제</h4>
+
 ```roomsql
 "select i from Item i where type(i)=Book",Item.class)
 ```
@@ -455,6 +459,7 @@ ABS,SQRT,MOD 같은 수학함수<br>
 N+1문제를 fetch join으로 해결가능하다<br>
 <h3>1대 다 관계에서 fetch join</h3>
 데이터가 뻥튀기 될 수 있다.<br>
+
 ```roomsql
 select t from Team t join fetch t.members 
 ```
@@ -473,10 +478,12 @@ select t from Team t join fetch t.members
 여러 테이블 조인해서 엔티티가 가진 모양이 아닌 다른 결과를 할때 일반 조인을 사용해서 필요한 데이터만 DTO로 반환하는 것이 효과적<br>
 <h2>다형성 쿼리</h2>
 조회 대상을 특정 자식으로 한정할떄
+
 ```roomsql
 select i from Item i where type(i) IN (BOOk,Movie)//Item 중 Book,Movie를 조회해라
 ```
 상속 구조에서 부모 타입을 특정 자식 타입으로 다룰 떄<br>
+
 ```roomsql
 select i from Item i where treat(i as Book).author='kim'
 ```
@@ -497,6 +504,7 @@ select i from Item i where treat(i as Book).author='kim'
 PK로 찍어서 update,delete 제외한 나머지 모든 SQL 의 UPDate 문이나 delete 문 <br>
 JPA의 한건한건의 변경감지 대신 쿼리 한번으로 update 치기 가능<br>
 <h3>예제</h3>
+
 ```java
 int resultCount=em.createQuery("update Member m st m.age=20").executeUpdate();
 ```

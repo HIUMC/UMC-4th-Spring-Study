@@ -11,5 +11,10 @@
         <module name="core.test" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="core" target="11" />
+      <module name="hello.core.main" target="11" />
+      <module name="hello.core.test" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
