@@ -2,19 +2,23 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.26/8f8cf0372abf564913e9796623aac4c8ea44025a/lombok-1.18.26.jar" />
         </processorPath>
-        <module name="core.main" />
-        <module name="core.test" />
+        <module name="jpashop.main" />
       </profile>
     </annotationProcessing>
+<<<<<<<< HEAD:dionisos198/스프링_핵심원리_dionisos/.idea/compiler.xml
     <bytecodeTargetLevel>
       <module name="core" target="11" />
       <module name="hello.core.main" target="11" />
       <module name="hello.core.test" target="11" />
     </bytecodeTargetLevel>
+========
+    <bytecodeTargetLevel target="11" />
+>>>>>>>> main:letskuku/스프링_부트와_JPA_활용1/.idea/compiler.xml
   </component>
 </project>
